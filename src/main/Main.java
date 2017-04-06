@@ -26,7 +26,7 @@ public class Main {
         listImg = new ArrayList<>();
         listImgVect = new ArrayList<>();
 
-        /****** TESTS ******/
+        /****** TESTS (won't work in the new architecture)******/
         /*logOCRTest("confusion-matrix-test.txt");
         distTest();
         GSTest();*/
@@ -239,7 +239,6 @@ public class Main {
                     break;
                 case "Z":
                     image.setFeatureZoning();
-                    System.out.println(image.getVect().size());
                     break;
                 case "GS+HVP":
                     image.setFeatureGsAndHVProfile();
@@ -339,32 +338,6 @@ public class Main {
         for (OCRImage image : listImg) {
             int decision = CalculMath.PPV(image.getVect(), listImgVect);
             image.setDecision(listImg.get(decision).getLabel());
-        }
-    }
-
-    /**
-     * Get the grey scale of every image
-     */
-    private static void getGsVectValue() {
-        for (OCRImage image : listImg) {
-            System.out.println("Image : " + image.getImg().getTitle() + " / Grey Scale : " + image.getVect(0));
-        }
-    }
-
-    private static void getVectValue(OCRImage image) {
-        System.out.println("Image : " + image.getImg().getTitle());
-        for (int i  = 0; i < image.getVect().size(); i++)
-        {
-            System.out.println(" Vector valor for [" + i + "] : " + image.getVect(i));
-        }
-    }
-
-    /**
-     * Get the decision of every image
-     */
-    private static void getImageDecision() {
-        for (OCRImage image : listImg) {
-            System.out.println("Image : " + image.getImg().getTitle() + " / Decision : " + image.getDecision());
         }
     }
 }

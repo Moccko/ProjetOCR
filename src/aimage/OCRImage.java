@@ -173,6 +173,9 @@ public class OCRImage {
     }
 
     public void setFeatureZoning() {
+
+        /* Ancienne méthode -> inefficace car créait 16 éléments au lieu de 9 (on ne sait pas pourquoi)
+
         for(int i = 0; i < img.getWidth(); i+= img.getWidth()/3)
         {
             for(int j = 0; j < img.getHeight(); j+= img.getHeight()/3)
@@ -182,6 +185,19 @@ public class OCRImage {
                 OCRImage ocrImageTemp = new OCRImage(imagePlusTemp, '?', null);
                 vect.add(ocrImageTemp.averageGs());
             }
+        }
+        */
+
+        for (int div = 0; div < 9; div++) {
+            Double sum = 0.0;
+            for (int i = (div/3)*(img.getHeight()/3); i < (div/3)*(img.getHeight()/3)+img.getHeight()/3; i++)
+            {
+                for (int j = (div%3)*(img.getWidth()/3); j < (div%3)*(img.getWidth()/3)+img.getWidth()/3; j++)
+                {
+                    sum += img.getPixel(j, i)[0];
+                }
+            }
+            vect.add(sum/((img.getWidth()/3)*(img.getHeight()/3)));
         }
     }
 
