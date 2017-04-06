@@ -125,7 +125,7 @@ public class Main {
         for (int i = 0; i < 10; i++) {
             s.append("-----");
         }
-        s.append("\n Le taux de reconnaissance est de ...%");
+        s.append("\n Le taux de reconnaissance est de " + countSuccess(matriceConfusion) + "%");
 
         Charset charset = Charset.forName("UTF-8");
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(pathOut), charset)) {
@@ -147,6 +147,17 @@ public class Main {
                         file.getAbsolutePath()));
             }
         }
+    }
+
+    private static int countSuccess(int[][] matriceConfusion)
+    {
+        int countSuccess = 0;
+        for (int i = 0; i < 10; i++)
+        {
+           countSuccess += matriceConfusion[i][i];
+        }
+
+        return countSuccess;
     }
 
 
