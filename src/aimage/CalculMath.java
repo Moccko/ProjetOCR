@@ -9,7 +9,6 @@ public class CalculMath {
 
     public static double distEucli(ArrayList<Double> vect1, ArrayList<Double> vect2) {
         double sum = 0.d;
-        //sqrt(xb-xa)²+(yb-ya)
         for (int i = 0; i < vect1.size(); i++) {
             double x = (vect2.get(i) - vect1.get(i));
             sum += Math.pow(x, 2.d);
@@ -17,12 +16,10 @@ public class CalculMath {
         return Math.sqrt(sum);
     }
 
-    public static int PPV(ArrayList<Double> vect, ArrayList<ArrayList<Double>> tabVect, int except) {
+    public static int PPV(ArrayList<Double> vect, ArrayList<ArrayList<Double>> tabVect) {
         int index = -1;
         double dist = Double.MAX_VALUE;
         for (int i = 0; i < tabVect.size(); i++) {
-            if (i == except)
-                continue;
             double dist1 = distEucli(vect, tabVect.get(i));
             if (dist1 < dist) {
                 dist = dist1;

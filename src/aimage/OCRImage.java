@@ -3,6 +3,11 @@ package aimage;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -15,14 +20,17 @@ public class OCRImage {
 
     public OCRImage(ImagePlus img, char label, String path) {
         this.img = img;
-        this.label = label;
         this.path = path;
-//        this.decision = '?';
+        this.label = label;
+        decision = '?';
         vect = new ArrayList<>();
 
-        int val = new Random().nextInt(10);
-        String i = Integer.toString(val);
-        this.decision = i.charAt(0);
+        if(path == "testMatrice")
+        {
+            int val = new Random().nextInt(10);
+            String i = Integer.toString(val);
+            decision = i.charAt(0);
+        }
     }
 
     public ImagePlus getImg() {
@@ -65,9 +73,9 @@ public class OCRImage {
         this.vect = vect;
     }
 
+
     public double averageGs() {
         ImageProcessor imageProcessor = img.getProcessor();
-        byte[] pixels = (byte[]) imageProcessor.getPixels();
         int height = imageProcessor.getHeight();
         int width = imageProcessor.getWidth();
 
@@ -75,11 +83,11 @@ public class OCRImage {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                sum += pixels[i + j * width] & 0xff;
+                sum += img.getPixel(i, j)[0];
             }
         }
 
-        return sum / pixels.length;
+        return sum / (height*width);
     }
 
     public void setFeatureGs() {
