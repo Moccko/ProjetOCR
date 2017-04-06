@@ -138,7 +138,6 @@ public class OCRImage {
     public void setFeatureIso() {
         vect = new ArrayList<>();
         double rapportIso = perimetre()/(4 * Math.PI * surface());
-        System.out.println("image : " + img.getTitle() + " / rapport Iso = " + rapportIso + " - perimetre = " + perimetre() + " - surface = " + surface());
         vect.add(rapportIso);
     }
 
@@ -173,6 +172,19 @@ public class OCRImage {
         return blackPixel;
     }
 
+    public void setFeatureZoning() {
+        for(int i = 0; i < img.getWidth(); i+= img.getWidth()/3)
+        {
+            for(int j = 0; j < img.getHeight(); j+= img.getHeight()/3)
+            {
+                img.setRoi(i, j, img.getWidth()/3, img.getHeight()/3);
+                ImagePlus imagePlusTemp = img.duplicate();
+                OCRImage ocrImageTemp = new OCRImage(imagePlusTemp, '?', null);
+                vect.add(ocrImageTemp.averageGs());
+            }
+        }
+    }
+
     // Filtres niveau de gris + profil horizontal-Vertical
     public void setFeatureGsAndHVProfile() {
         ArrayList<Double> tempVect;
@@ -203,7 +215,65 @@ public class OCRImage {
         vect = tempVect;
     }
 
-    // Niveau de gris + Isoperimetrie + profil horizontal-Vertical
+
+    // Niveau de gris + Zoning
+    public void setFeatureGSAndZoning() {
+        ArrayList<Double> tempVect;
+        setFeatureGs();
+        tempVect = vect;
+        setFeatureZoning();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+    //  Isoperimetrie + Zoning
+    public void setFeatureIsoAndZoning() {
+        ArrayList<Double> tempVect;
+        setFeatureIso();
+        tempVect = vect;
+        setFeatureZoning();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+    // Zoning + Profil horizontal-Vertical
+    public void setFeatureZoningAndHVProfile() {
+        ArrayList<Double> tempVect;
+        setFeatureZoning();
+        tempVect = vect;
+        setFeatureHVProfile();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+    // Niveau de gris + Zoning + Profil horizontal-Vertical
+    public void setFeatureGSAndZoningAndHVProfile() {
+        ArrayList<Double> tempVect;
+        setFeatureGs();
+        tempVect = vect;
+        setFeatureZoning();
+        tempVect.addAll(vect);
+        setFeatureHVProfile();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+
+    // Niveau de gris + Zoning + Isoperimetrie
+    public void setFeatureGSAndZoningAndIso() {
+        ArrayList<Double> tempVect;
+        setFeatureGs();
+        tempVect = vect;
+        setFeatureZoning();
+        tempVect.addAll(vect);
+        setFeatureIso();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+
+
+    // Niveau de gris + Isoperimetrie + Profil horizontal-Vertical
     public void setFeatureGsAndIsoAndHVProfile() {
         ArrayList<Double> tempVect;
         setFeatureGs();
@@ -211,6 +281,32 @@ public class OCRImage {
         setFeatureIso();
         tempVect.addAll(vect);
         setFeatureHVProfile();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+    // Zoning + Isoperimetrie + Profil horizontal-Vertical
+    public void setFeatureZoningAndIsoAndHVProfile() {
+        ArrayList<Double> tempVect;
+        setFeatureZoning();
+        tempVect = vect;
+        setFeatureIso();
+        tempVect.addAll(vect);
+        setFeatureHVProfile();
+        tempVect.addAll(vect);
+        vect = tempVect;
+    }
+
+    // Niveau de gris + Isoperimetrie + Profil horizontal-Vertical + Zoning
+    public void setFeatureGsAndIsoAndHVProfileAndZoning() {
+        ArrayList<Double> tempVect;
+        setFeatureGs();
+        tempVect = vect;
+        setFeatureIso();
+        tempVect.addAll(vect);
+        setFeatureHVProfile();
+        tempVect.addAll(vect);
+        setFeatureZoning();
         tempVect.addAll(vect);
         vect = tempVect;
     }

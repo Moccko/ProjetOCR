@@ -49,17 +49,41 @@ public class Main {
         /** Vecteur Isoperimetrique **/
         setFeatureVect("I");
 
+        /** Vecteur Zoning **/
+        setFeatureVect("Z");
+
         /** Vecteur Niveau de gris + Horizontal-Vertical **/
         setFeatureVect("GS+HVP");
 
         /** Vecteur Niveau de gris + Isoperimetrie **/
         setFeatureVect("GS+I");
 
+        /** Vecteur Niveau de gris + Zoning **/
+        setFeatureVect("GS+Z");
+
         /** Vecteur Isoperimetrie + Horizontal-Vertical **/
         setFeatureVect("I+HVP");
 
+        /** Vecteur Isoperimetrie + Zoning **/
+        setFeatureVect("I+Z");
+
+        /** Vecteur Zoning + Horizontal-Vertical **/
+        setFeatureVect("Z+HVP");
+
         /** Vecteur Niveau de gris +  Isoperimetrie + Horizontal-Vertical **/
         setFeatureVect("GS+I+HVP");
+
+        /** Vecteur Niveau de gris +  Zoning + Isoperimetrie **/
+        setFeatureVect("GS+Z+I");
+
+        /** Vecteur Niveau de gris +  Zoning + Horizontal-Vertical **/
+        setFeatureVect("GS+Z+HVP");
+
+        /** Vecteur Zoning +  Isoperimetrie + Horizontal-Vertical **/
+        setFeatureVect("Z+I+HVP");
+
+        /** Vecteur Niveau de gris + Zoning +  Isoperimetrie + Horizontal-Vertical **/
+        setFeatureVect("GS+I+HVP+Z");
     }
 
     private static void GSTest() {
@@ -139,8 +163,10 @@ public class Main {
         for (int i = 0; i < 10; i++) {
             s.append(i).append("| ");
             for (int j = 0; j < 10; j++) {
-                s.append("  " + matriceConfusion[i][j] + "  ");
-                //s.append("  0  ");
+                if(matriceConfusion[i][j] < 10)
+                    s.append("  " + matriceConfusion[i][j] + "  ");
+                else
+                    s.append("  " + matriceConfusion[i][j] + " ");
             }
             s.append("\n");
         }
@@ -211,17 +237,39 @@ public class Main {
                 case "I":
                     image.setFeatureIso();
                     break;
+                case "Z":
+                    image.setFeatureZoning();
+                    System.out.println(image.getVect().size());
+                    break;
                 case "GS+HVP":
                     image.setFeatureGsAndHVProfile();
                     break;
                 case "GS+I":
                     image.setFeatureGsAndIso();
+                case "GS+Z":
+                    image.setFeatureGSAndZoning();
                     break;
+                case "I+Z":
+                    image.setFeatureIsoAndZoning();
                 case "I+HVP":
                     image.setFeatureIsoAndHVProfile();
+                case "Z+HVP":
+                    image.setFeatureZoningAndHVProfile();
                     break;
                 case "GS+I+HVP":
                     image.setFeatureGsAndIsoAndHVProfile();
+                    break;
+                case "GS+Z+I":
+                    image.setFeatureGSAndZoningAndIso();
+                    break;
+                case "GS+Z+HVP":
+                    image.setFeatureGSAndZoningAndHVProfile();
+                    break;
+                case "Z+I+HVP":
+                    image.setFeatureZoningAndIsoAndHVProfile();
+                    break;
+                case "GS+I+HVP+Z":
+                    image.setFeatureGsAndIsoAndHVProfileAndZoning();
                     break;
             }
             listImgVect.add(image.getVect());
@@ -230,31 +278,55 @@ public class Main {
         String pathOut = "Confusion_Matrices/";
         switch (filters) {
             case "GS":
-                pathOut += "Single_Filter/GreyScale.txt";
+                pathOut += "1_Filter/GreyScale.txt";
                 break;
             case "HP":
-                pathOut += "Single_Filter/HorizontalProfile.txt";
+                pathOut += "1_Filter/HorizontalProfile.txt";
                 break;
             case "VP":
-                pathOut += "Single_Filter/VerticalProfile.txt";
+                pathOut += "1_Filter/VerticalProfile.txt";
                 break;
             case "HVP":
-                pathOut += "Single_Filter/HorizontalVerticalProfile.txt";
+                pathOut += "1_Filter/HorizontalVerticalProfile.txt";
                 break;
             case "I":
-                pathOut += "Single_Filter/Isoperimetry.txt";
+                pathOut += "1_Filter/Isoperimetry.txt";
+                break;
+            case "Z":
+                pathOut += "1_Filter/Zoning.txt";
                 break;
             case "GS+HVP":
-                pathOut += "Many_Filters/GreyScale-and-HorizontalVerticalProfile.txt";
+                pathOut += "2_Filters/GreyScale-and-HorizontalVerticalProfile.txt";
                 break;
             case "GS+I":
-                pathOut += "Many_Filters/GreyScale-and-Isoperimetry.txt";
+                pathOut += "2_Filters/GreyScale-and-Isoperimetry.txt";
+                break;
+            case "GS+Z":
+                pathOut += "2_Filters/GreyScale-and-Zoning.txt";
                 break;
             case "I+HVP":
-                pathOut += "Many_Filters/Isoperimetry-and-HorizontalVerticalProfile.txt";
+                pathOut += "2_Filters/Isoperimetry-and-HorizontalVerticalProfile.txt";
+                break;
+            case "I+Z":
+                pathOut += "2_Filters/Isoperimetry-and-Zoning.txt";
+                break;
+            case "Z+HVP":
+                pathOut += "2_Filters/Zoning-and-HorizontalVerticalProfile.txt";
                 break;
             case "GS+I+HVP":
-                pathOut += "Many_Filters/GreyScale-and-Isoperimetry-and-HorizontalVerticalProfile.txt";
+                pathOut += "3_Filters/GreyScale-and-Isoperimetry-and-HorizontalVerticalProfile.txt";
+                break;
+            case "GS+Z+I":
+                pathOut += "3_Filters/GreyScale-and-Zoning-and-Isoperimetry.txt";
+                break;
+            case "GS+Z+HVP":
+                pathOut += "3_Filters/GreyScale-and-Zoning-and-HorizontalVerticalProfile.txt";
+                break;
+            case "Z+I+HVP":
+                pathOut += "3_Filters/Zoning-and-Isoperimetry-and-HorizontalVerticalProfile.txt";
+                break;
+            case "GS+I+HVP+Z":
+                pathOut += "4_Filters/GreyScale-and-Isoperimetry-and-HorizontalVerticalProfile-and-Zoning.txt";
                 break;
         }
         logOCR(pathOut);
@@ -290,7 +362,7 @@ public class Main {
     /**
      * Get the decision of every image
      */
-    private static void getImageDecsision() {
+    private static void getImageDecision() {
         for (OCRImage image : listImg) {
             System.out.println("Image : " + image.getImg().getTitle() + " / Decision : " + image.getDecision());
         }
