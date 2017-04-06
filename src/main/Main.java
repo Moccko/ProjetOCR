@@ -5,6 +5,7 @@ import aimage.OCRImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageConverter;
+import ij.process.ImageProcessor;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,18 +26,40 @@ public class Main {
         listImg = new ArrayList<>();
         listImgVect = new ArrayList<>();
 
-        /** TESTS **/
-        logOCRTest("confusion-matrix-test.txt");
+        /****** TESTS ******/
+        /*logOCRTest("confusion-matrix-test.txt");
         distTest();
-        GSTest();
+        GSTest();*/
 
 
-        /** REAL CODE **/
-        createListImage("src/baseProjetOCR", listImg);
-        setFeatureGsVect();
-        setImageDecision();
-        logOCR("confusion-matrix.txt");
+        /****** REAL CODE ******/
 
+        /** Vecteur Niveau de gris **/
+        setFeatureVect("GS");
+
+        /** Vecteur Horizontal **/
+        setFeatureVect("VP");
+
+        /** Vecteur Vertical **/
+        setFeatureVect("HP");
+
+        /** Vecteur Horizontal-Vertical **/
+        setFeatureVect("HVP");
+
+        /** Vecteur Isoperimetrique **/
+        setFeatureVect("I");
+
+        /** Vecteur Niveau de gris + Horizontal-Vertical **/
+        setFeatureVect("GS+HVP");
+
+        /** Vecteur Niveau de gris + Isoperimetrie **/
+        setFeatureVect("GS+I");
+
+        /** Vecteur Isoperimetrie + Horizontal-Vertical **/
+        setFeatureVect("I+HVP");
+
+        /** Vecteur Niveau de gris +  Isoperimetrie + Horizontal-Vertical **/
+        setFeatureVect("GS+I+HVP");
     }
 
     private static void GSTest() {
@@ -135,22 +158,23 @@ public class Main {
         }
     }
 
-    public static void createListImage(String path, ArrayList<OCRImage> listeImg) {
+    public static void createListImage(String path) {
+        listImg = new ArrayList<>();
+        listImgVect = new ArrayList<>();
         File[] files = new File(path).listFiles();
         assert files != null;
         if (files.length != 0) {
             for (File file : files) {
                 ImagePlus tempImg = new ImagePlus(file.getAbsolutePath());
                 new ImageConverter(tempImg).convertToGray8();
-                listeImg.add(new OCRImage(tempImg,
+                listImg.add(new OCRImage(tempImg,
                         file.getName().substring(0, 1).charAt(0),
                         file.getAbsolutePath()));
             }
         }
     }
 
-    private static int countSuccess(int[][] matriceConfusion)
-    {
+    private static int countSuccess(int[][] matriceConfusion) {
         int countSuccess = 0;
         for (int i = 0; i < 10; i++)
         {
@@ -162,13 +186,78 @@ public class Main {
 
 
     /**
-     * Get the grey scale of every image
+     * 1 - Create images
+     * 2 - Set the appropriate filter of every image in their vector
+     * 3 - Set their decision with their vector
+     * 4 - Generate the file that contains the matrix
      */
-    private static void setFeatureGsVect() {
+    private static void setFeatureVect(String filters) {
+        createListImage("src/baseProjetOCR");
         for (OCRImage image : listImg) {
-            image.setFeatureGs();
+
+            switch (filters) {
+                case "GS":
+                    image.setFeatureGs();
+                    break;
+                case "HP":
+                    image.setFeatureHProfile();
+                    break;
+                case "VP":
+                    image.setFeatureVProfile();
+                    break;
+                case "HVP":
+                    image.setFeatureHVProfile();
+                    break;
+                case "I":
+                    image.setFeatureIso();
+                    break;
+                case "GS+HVP":
+                    image.setFeatureGsAndHVProfile();
+                    break;
+                case "GS+I":
+                    image.setFeatureGsAndIso();
+                    break;
+                case "I+HVP":
+                    image.setFeatureIsoAndHVProfile();
+                    break;
+                case "GS+I+HVP":
+                    image.setFeatureGsAndIsoAndHVProfile();
+                    break;
+            }
             listImgVect.add(image.getVect());
         }
+        setImageDecision();
+        String pathOut = "Confusion_Matrices/";
+        switch (filters) {
+            case "GS":
+                pathOut += "Single_Filter/GreyScale.txt";
+                break;
+            case "HP":
+                pathOut += "Single_Filter/HorizontalProfile.txt";
+                break;
+            case "VP":
+                pathOut += "Single_Filter/VerticalProfile.txt";
+                break;
+            case "HVP":
+                pathOut += "Single_Filter/HorizontalVerticalProfile.txt";
+                break;
+            case "I":
+                pathOut += "Single_Filter/Isoperimetry.txt";
+                break;
+            case "GS+HVP":
+                pathOut += "Many_Filters/GreyScale-and-HorizontalVerticalProfile.txt";
+                break;
+            case "GS+I":
+                pathOut += "Many_Filters/GreyScale-and-Isoperimetry.txt";
+                break;
+            case "I+HVP":
+                pathOut += "Many_Filters/Isoperimetry-and-HorizontalVerticalProfile.txt";
+                break;
+            case "GS+I+HVP":
+                pathOut += "Many_Filters/GreyScale-and-Isoperimetry-and-HorizontalVerticalProfile.txt";
+                break;
+        }
+        logOCR(pathOut);
     }
 
     /**
@@ -176,31 +265,8 @@ public class Main {
      */
     private static void setImageDecision() {
         for (OCRImage image : listImg) {
-            char temp = Character.forDigit(0, 10);
-            int calcul = CalculMath.PPV(image.getVect(), listImgVect);
-
-            if(calcul < 10)
-                temp = Character.forDigit(0, 10);
-            else if(calcul < 20)
-                temp = Character.forDigit(1, 10);
-            else if(calcul < 30)
-                temp = Character.forDigit(2, 10);
-            else if(calcul < 40)
-                temp = Character.forDigit(3, 10);
-            else if(calcul < 50)
-                temp = Character.forDigit(4, 10);
-            else if(calcul < 60)
-                temp = Character.forDigit(5, 10);
-            else if(calcul < 70)
-                temp = Character.forDigit(6, 10);
-            else if(calcul < 80)
-                temp = Character.forDigit(7, 10);
-            else if(calcul < 90)
-                temp = Character.forDigit(8, 10);
-            else if(calcul < 100)
-                temp = Character.forDigit(9, 10);
-
-            image.setDecision(temp);
+            int decision = CalculMath.PPV(image.getVect(), listImgVect);
+            image.setDecision(listImg.get(decision).getLabel());
         }
     }
 
@@ -213,6 +279,14 @@ public class Main {
         }
     }
 
+    private static void getVectValue(OCRImage image) {
+        System.out.println("Image : " + image.getImg().getTitle());
+        for (int i  = 0; i < image.getVect().size(); i++)
+        {
+            System.out.println(" Vector valor for [" + i + "] : " + image.getVect(i));
+        }
+    }
+
     /**
      * Get the decision of every image
      */
@@ -221,7 +295,5 @@ public class Main {
             System.out.println("Image : " + image.getImg().getTitle() + " / Decision : " + image.getDecision());
         }
     }
-
-
 }
 

@@ -19,8 +19,11 @@ public class CalculMath {
     public static int PPV(ArrayList<Double> vect, ArrayList<ArrayList<Double>> tabVect) {
         int index = -1;
         double dist = Double.MAX_VALUE;
+        double dist1 = 0.d;
+
         for (int i = 0; i < tabVect.size(); i++) {
-            double dist1 = distEucli(vect, tabVect.get(i));
+            if(vect != tabVect.get(i))
+                dist1 = distEucli(vect, tabVect.get(i));
             if (dist1 < dist) {
                 dist = dist1;
                 index = i;
